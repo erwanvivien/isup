@@ -13,6 +13,7 @@ export default function Home() {
 
       <main className={styles.main}>
         <h1 className={styles.title}>Is your service up?</h1>
+        <Uptime />
       </main>
     </div>
   );
