@@ -1,0 +1,51 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model Service {
+  name String @id
+  kind String
+
+  interval Float
+
+  ServiceStatus ServiceStatus[]
+
+  @@unique([name, kind])
+  @@index([name, kind])
+}
+
+model ServiceStatus {
+  id          String  @id @default(uuid())
+  service     Service @relation(fields: [serviceName, serviceKind], references: [name, kind])
+  serviceName String
+  serviceKind String
+
+  timestamp DateTime @default(now())
+
+  command_name String
+  stdout       String
+  retcode      Int
+
+  @@index([serviceName, serviceKind, timestamp])
+}
+
+model ExecException {
+  id String @id @default(uuid())
+
+  name    String
+  message String
+
+  code   Int?
+  killed Boolean?
+  cmd    String?
+  signal String?
+  stack  String?
+}
