@@ -7,6 +7,7 @@ export default async function seed() {
   const serviceNames = Services.map((service) => service.name);
 
   Services.forEach(async (service) => {
+    console.log("Creating service", service.name);
     const services = await prisma.service.upsert({
       where: {
         name_kind: {
@@ -28,4 +29,4 @@ export default async function seed() {
   });
 }
 
-export {};
+seed().then();
