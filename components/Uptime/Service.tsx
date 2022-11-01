@@ -55,6 +55,9 @@ type StatsRingCardProps = {
   }[];
 };
 
+/// Anchor validation regex
+const anchorRegex = /[^a-z0-9-]/i;
+
 const StatsRingCard: React.FC<StatsRingCardProps> = ({
   title,
   completed,
@@ -72,9 +75,17 @@ const StatsRingCard: React.FC<StatsRingCardProps> = ({
   ));
 
   const uptime = total !== 0 ? (completed / total) * 100 : 0;
+  const anchor = title.toLowerCase().replace(anchorRegex, "-");
 
   return (
-    <Card withBorder p="xl" radius="md" className={classes.card}>
+    <Card
+      withBorder
+      p="xl"
+      radius="md"
+      className={classes.card}
+      component="a"
+      href={`#${anchor}`}
+    >
       <div className={classes.inner}>
         <div>
           <Text size="xl" className={classes.label}>

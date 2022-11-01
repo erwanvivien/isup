@@ -4,6 +4,7 @@ import { Suspense, useEffect, useState } from "react";
 import { RetrieveData, RetrieveResponse } from "../../pages/api/retrieve";
 import Service from "./Service";
 import { Grid, Loader, SimpleGrid, Title } from "@mantine/core";
+import Commands from "./Commands";
 
 type Stats = Record<
   string,
@@ -46,6 +47,7 @@ const formatStats = (
 
 const Uptime: React.FC = () => {
   const [services, setServices] = useState<RetrieveData["services"]>([]);
+  const [statuses, setStatuses] = useState<RetrieveData["statuses"]>({});
   const [serviceStats, setStatsService] = useState<Record<string, Stats>>({});
   const [stats, setStats] = useState<Stats>({});
 
@@ -54,17 +56,19 @@ const Uptime: React.FC = () => {
     const signal = controllerAbort.signal;
 
     const fetchServices = async () => {
-      const resp = await fetch("/api/retrieve", { signal })
+      fetch("/api/retrieve", { signal })
         .then((res) => res.json() as Promise<RetrieveResponse>)
+        .then((resp) => {
+          if (!resp || !resp.success) return;
+
+          const [serviceStats, stats] = formatStats(resp.data.statuses);
+
+          setServices(resp.data.services);
+          setStatuses(resp.data.statuses);
+          setStatsService(serviceStats);
+          setStats(stats);
+        })
         .catch((err) => console.error(err));
-
-      if (!resp || !resp.success) return;
-
-      const [serviceStats, stats] = formatStats(resp.data.statuses);
-
-      setServices(resp.data.services);
-      setStatsService(serviceStats);
-      setStats(stats);
     };
 
     fetchServices();
@@ -76,32 +80,46 @@ const Uptime: React.FC = () => {
     };
   }, []);
 
+  const ServicesDisplay: React.FC = () => (
+    <SimpleGrid cols={3}>
+      {services.map((service, i) => (
+        <Service
+          key={service.name}
+          title={service.name}
+          total={stats[service.name]?.total ?? 0}
+          completed={stats[service.name]?.succeeded ?? 0}
+          stats={[
+            {
+              label: "Failed",
+              value: stats[service.name]?.failed ?? 0,
+            },
+            {
+              label: "Refresh interval",
+              value: "" + service.interval + "s",
+            },
+          ]}
+        />
+      ))}
+    </SimpleGrid>
+  );
+
+  if (services.length === 0) {
+    return <Loader />;
+  }
+
+  console.log(statuses);
+
   return (
-    <Suspense fallback={<Loader />}>
+    <>
       <Title order={2}>Test</Title>
       <div className={styles.container}>
-        <SimpleGrid cols={3}>
-          {services.map((service, i) => (
-            <Service
-              key={service.name}
-              title={service.name}
-              total={stats[service.name]?.total ?? 0}
-              completed={stats[service.name]?.succeeded ?? 0}
-              stats={[
-                {
-                  label: "Failed",
-                  value: stats[service.name]?.failed ?? 0,
-                },
-                {
-                  label: "Refresh interval",
-                  value: "" + service.interval + "s",
-                },
-              ]}
-            />
-          ))}
-        </SimpleGrid>
+        <ServicesDisplay />
+        <Commands
+          service={services[0].name}
+          statuses={statuses[services[0].name]}
+        />
       </div>
-    </Suspense>
+    </>
   );
 };
 
