@@ -1,6 +1,6 @@
 [
   {
-    "name": "Xiaojiba.dev",
+    "name": "Xiaojiba",
     "kind": "website",
     "url": "https://xiaojiba.dev",
     "interval": 60,
@@ -20,6 +20,56 @@
       {
         "name": "certificates",
         "command": "./public/certificates.sh 'xiaojiba.dev' '80'",
+        "retcode": 0
+      }
+    ]
+  },
+  {
+    "name": "Fast-QR",
+    "kind": "website",
+    "url": "https://fast-qr.com",
+    "interval": 60,
+    "commands": [
+      {
+        "name": "ping",
+        "command": "ping -c 1 -W 10 fast-qr.com",
+        "retcode": 0,
+        "stdout": "1 packets transmitted, 1 received, 0% packet loss, time 0ms"
+      },
+      {
+        "name": "curl",
+        "command": "curl --head https://fast-qr.com 2>/dev/null",
+        "retcode": 0,
+        "stdout": "HTTP/2 200"
+      },
+      {
+        "name": "certificates",
+        "command": "./public/certificates.sh 'fast-qr.com' '80'",
+        "retcode": 0
+      }
+    ]
+  },
+  {
+    "name": "MsSettings",
+    "kind": "website",
+    "url": "https://ms-settings.net",
+    "interval": 60,
+    "commands": [
+      {
+        "name": "ping",
+        "command": "ping -c 1 -W 10 ms-settings.net",
+        "retcode": 0,
+        "stdout": "1 packets transmitted, 1 received, 0% packet loss, time 0ms"
+      },
+      {
+        "name": "curl",
+        "command": "curl --head https://ms-settings.net 2>/dev/null",
+        "retcode": 0,
+        "stdout": "HTTP/2 200"
+      },
+      {
+        "name": "certificates",
+        "command": "./public/certificates.sh 'ms-settings.net' '80'",
         "retcode": 0
       }
     ]
