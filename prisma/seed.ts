@@ -4,29 +4,24 @@ const prisma = new PrismaClient();
 import Services from "../public/services.json";
 
 export default async function seed() {
-  const serviceNames = Services.map((service) => service.name);
+  for (const service of Services) {
+    const data = {
+      name: service.name,
+      kind: service.kind,
+      interval: service.interval,
+    };
 
-  Services.forEach(async (service) => {
-    console.log("Creating service", service.name);
-    const services = await prisma.service.upsert({
+    await prisma.service.upsert({
       where: {
         name_kind: {
-          kind: service.kind,
           name: service.name,
+          kind: service.kind,
         },
       },
-      create: {
-        interval: service.interval,
-        kind: service.kind,
-        name: service.name,
-      },
-      update: {
-        interval: service.interval,
-        kind: service.kind,
-        name: service.name,
-      },
+      create: data,
+      update: data,
     });
-  });
+  }
 }
 
 seed().then();
