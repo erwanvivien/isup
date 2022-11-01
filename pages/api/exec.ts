@@ -19,4 +19,5 @@ const execWrapper = (command: string) =>
     });
   });
 
+export type { ExecOutput };
 export { execWrapper };

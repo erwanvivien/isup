@@ -7,19 +7,19 @@
     "commands": [
       {
         "name": "ping",
-        "command": "ping -c 1 -W 10 xiaojiba.dev | head -n 4 | tail -n 1",
+        "command": "ping -c 1 -W 10 xiaojiba.dev",
         "retcode": 0,
         "stdout": "1 packets transmitted, 1 received, 0% packet loss, time 0ms"
       },
       {
         "name": "curl",
-        "command": "curl --head https://xiaojiba.dev 2>/dev/null | head -n 1",
+        "command": "curl --head https://xiaojiba.dev 2>/dev/null",
         "retcode": 0,
         "stdout": "HTTP/2 200"
       },
       {
         "name": "certificates",
-        "command": "read -r notBefore notAfter <<< \"$(openssl s_client -servername xiaojiba.dev -connect xiaojiba.dev:80 <<< 'Q' 2>/dev/null | openssl x509 -noout -dates | cut -d'=' -f2 | date '+%s' -f - | xargs)\";\nif [ -z \"$notBefore\" ] || [ -z \"$notAfter\" ]; then\n  echo \"Error: failed to get certificate dates\";\n  exit 1;\nfi;\nnow=$(date +%s);\nif [ \"$now\" -lt \"$notBefore\" ] && echo OK || [ \"$now\" -gt \"$notAfter\" ] && echo \"EXPIRED\" || echo REFRESH",
+        "command": "./public/certificates.sh 'xiaojiba.dev' '80'",
         "retcode": 0
       }
     ]
