@@ -30,9 +30,9 @@ model ServiceStatus {
 
   timestamp DateTime @default(now())
 
-  command_name String
-  stdout       String
-  retcode      Int
+  commandName String
+  stdout      String
+  retcode     Int
 
   @@index([serviceName, serviceKind, timestamp])
 }
