@@ -2,11 +2,13 @@ import type { NextApiRequest, NextApiResponse } from "next";
 
 import prisma from "../../prisma/prisma";
 import { Service, ServiceStatus } from "@prisma/client";
+import { dataWrapper, ResApi } from "./utils";
 
-type Data = {
+type RetrieveData = {
   services: Service[];
   statuses: Record<string, ServiceStatus[]>[];
 };
+type RetrieveResponse = ResApi<RetrieveData>;
 
 const getStatuses = (
   serviceName: string,
@@ -29,7 +31,10 @@ const getStatuses = (
 
 const getServices = () => prisma.service.findMany({});
 
-const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
+const handler = async (
+  req: NextApiRequest,
+  res: NextApiResponse<RetrieveResponse>
+) => {
   let lastHours = 6;
   if (req.query.lastHours && Number(req.query.lastHours) > 0) {
     lastHours = Number(req.query.lastHours);
@@ -51,8 +56,8 @@ const handler = async (req: NextApiRequest, res: NextApiResponse<Data>) => {
   }));
 
   const statuses = await Promise.all(promises);
-
-  return res.status(200).json({ services, statuses });
+  return res.status(200).json(dataWrapper({ services, statuses }));
 };
 
+export type { RetrieveData };
 export default handler;
