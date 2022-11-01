@@ -92,7 +92,10 @@ const Uptime: React.FC = () => {
                   label: "Failed",
                   value: stats[service.name]?.failed ?? 0,
                 },
-                { label: "Interval", value: service.interval },
+                {
+                  label: "Refresh interval",
+                  value: "" + service.interval + "s",
+                },
               ]}
             />
           ))}

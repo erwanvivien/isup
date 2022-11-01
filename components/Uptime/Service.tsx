@@ -50,7 +50,7 @@ type StatsRingCardProps = {
   completed: number;
   total: number;
   stats: {
-    value: number;
+    value: string | number;
     label: string;
   }[];
 };
@@ -83,7 +83,7 @@ const StatsRingCard: React.FC<StatsRingCardProps> = ({
               {completed}
             </Text>
             <Text size="xs" color="dimmed">
-              Completed
+              Succeded
             </Text>
           </div>
           <Group mt="lg">{items}</Group>
@@ -108,7 +108,7 @@ const StatsRingCard: React.FC<StatsRingCardProps> = ({
                   {((completed / total) * 100).toFixed(0)}%
                 </Text>
                 <Text align="center" size="xs" color="dimmed">
-                  Completed
+                  Uptime
                 </Text>
               </div>
             }
