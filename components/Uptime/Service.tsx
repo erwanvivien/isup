@@ -71,6 +71,8 @@ const StatsRingCard: React.FC<StatsRingCardProps> = ({
     </div>
   ));
 
+  const uptime = total !== 0 ? (completed / total) * 100 : 0;
+
   return (
     <Card withBorder p="xl" radius="md" className={classes.card}>
       <div className={classes.inner}>
@@ -94,9 +96,7 @@ const StatsRingCard: React.FC<StatsRingCardProps> = ({
             roundCaps
             thickness={6}
             size={150}
-            sections={[
-              { value: (completed / total) * 100, color: theme.primaryColor },
-            ]}
+            sections={[{ value: uptime, color: theme.primaryColor }]}
             label={
               <div>
                 <Text
@@ -105,7 +105,7 @@ const StatsRingCard: React.FC<StatsRingCardProps> = ({
                   className={classes.label}
                   sx={{ fontSize: 22 }}
                 >
-                  {((completed / total) * 100).toFixed(0)}%
+                  {uptime.toFixed(0)}%
                 </Text>
                 <Text align="center" size="xs" color="dimmed">
                   Uptime
