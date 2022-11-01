@@ -59,5 +59,5 @@ const handler = async (
   return res.status(200).json(dataWrapper({ services, statuses }));
 };
 
-export type { RetrieveData };
+export type { RetrieveResponse };
 export default handler;

@@ -50,5 +50,5 @@ const handler = async (
   return res.status(200).json(dataWrapper(commands));
 };
 
-export type { RefreshData };
+export type { RefreshResponse };
 export default handler;
