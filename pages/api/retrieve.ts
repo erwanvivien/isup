@@ -6,7 +6,7 @@ import { dataWrapper, ResApi } from "./utils";
 
 type RetrieveData = {
   services: Service[];
-  statuses: Record<string, ServiceStatus[]>[];
+  statuses: Record<string, ServiceStatus[]>;
 };
 type RetrieveResponse = ResApi<RetrieveData>;
 
@@ -46,18 +46,18 @@ const handler = async (
   }
 
   const services = await getServices();
-  const promises = services.map(async (service) => ({
-    [service.name]: await getStatuses(
-      service.name,
-      service.kind,
-      commandName,
-      lastHours
-    ),
-  }));
+  const promises = services.map(
+    async (service) =>
+      await getStatuses(service.name, service.kind, commandName, lastHours)
+  );
 
-  const statuses = await Promise.all(promises);
-  return res.status(200).json(dataWrapper({ services, statuses }));
+  const exec_statuses = await Promise.all(promises);
+  const statuses = Object.fromEntries(
+    services.map((service, i) => [service.name, exec_statuses[i]])
+  );
+
+  return res.status(200).json(dataWrapper({ services, statuses: statuses }));
 };
 
-export type { RetrieveResponse };
+export type { RetrieveResponse, RetrieveData };
 export default handler;
