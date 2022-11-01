@@ -83,7 +83,7 @@ const StatsRingCard: React.FC<StatsRingCardProps> = ({
               {completed}
             </Text>
             <Text size="xs" color="dimmed">
-              Succeded
+              Succeeded
             </Text>
           </div>
           <Group mt="lg">{items}</Group>
