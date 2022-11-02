@@ -111,7 +111,6 @@ const Uptime: React.FC = () => {
 
   return (
     <>
-      <Title order={2}>Test</Title>
       <div className={styles.container}>
         <ServicesDisplay />
         {services.map((service) => (
