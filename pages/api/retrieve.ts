@@ -4,9 +4,13 @@ import prisma from "../../prisma/prisma";
 import { Service, ServiceStatus } from "@prisma/client";
 import { dataWrapper, ResApi } from "./utils";
 
+type ServiceStatusDate = ServiceStatus & {
+  timestamp: string;
+};
+
 type RetrieveData = {
   services: Service[];
-  statuses: Record<string, ServiceStatus[]>;
+  statuses: Record<string, ServiceStatusDate[]>;
 };
 type RetrieveResponse = ResApi<RetrieveData>;
 
@@ -27,7 +31,7 @@ const getStatuses = (
         gt: new Date(Date.now() - 1000 * 60 * 60 * lastHours),
       },
     },
-  });
+  }) as any as Promise<ServiceStatusDate[]>;
 
 const getServices = () => prisma.service.findMany({});
 
