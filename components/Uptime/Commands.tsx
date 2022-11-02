@@ -75,7 +75,9 @@ type CommandsProps = {
 const Commands: React.FC<CommandsProps> = ({ service, statuses }) => {
   const [open, setOpen] = useState(true);
 
-  const commands = Array.from(new Set(statuses.map((s) => s.commandName)));
+  const commands = Array.from(new Set(statuses.map((s) => s.commandName))).sort(
+    (a, b) => a.localeCompare(b)
+  );
   const statusPerCommands = Object.fromEntries(
     commands.map(
       (command) =>
