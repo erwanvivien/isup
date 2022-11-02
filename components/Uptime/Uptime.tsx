@@ -114,10 +114,14 @@ const Uptime: React.FC = () => {
       <Title order={2}>Test</Title>
       <div className={styles.container}>
         <ServicesDisplay />
-        <Commands
-          service={services[0].name}
-          statuses={statuses[services[0].name]}
-        />
+        {services.map((service) => (
+          <div key={service.name}>
+            <Commands
+              service={service.name}
+              statuses={statuses[service.name]}
+            />
+          </div>
+        ))}
       </div>
     </>
   );
