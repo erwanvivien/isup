@@ -7,36 +7,20 @@
 # Exits 2 if the certificate is expired
 
 SERV_NAME="${1}"
-SERV_PORT="${2}"
+SERV_PORT="${2:-443}"
 
 if [ -z "${SERV_NAME}" ] || [ -z "${SERV_PORT}" ]; then
-    echo "USAGE"
+    echo "Usage: ./$0 'server_name' 'server_port'"
     exit 99
 fi
 
 # openssl s_client -servername xiaojiba.dev -connect xiaojiba.dev:80 <<< 'Q' 2>/dev/null | openssl x509 -noout -dates
 complete_certificates=$(openssl s_client -servername "${SERV_NAME}" -connect "${SERV_NAME}:${SERV_PORT}" <<< 'Q' 2>/dev/null)
+# echo "$complete_certificates"
 if [ "$?" -ne 0 ]; then
-    echo "NOT_FOUND"
+    echo "No certficates were found"
     exit 5
 fi
 
-certificates=$(echo "${complete_certificates}" | openssl x509 -noout -dates | cut -d'=' -f2 | date '+%s' -f - | xargs)
-read -r notBefore notAfter <<< "${certificates}"
-now=$(date +%s)
-
-if [ -z "$notBefore" ] || [ -z "$notAfter" ]; then
-    echo "FAILED"
-    exit 5
-fi
-
-if [ "$now" -lt "$notBefore" ]; then 
-    echo "OK"
-    exit 0
-elif [ "$now" -gt "$notAfter" ]; then 
-    echo "EXPIRED"
-    exit 2
-else
-    echo "REFRESH"
-    exit 1
-fi
+# Checks if certificate expires in one month
+echo "${complete_certificates}" | openssl x509 -noout -dates -checkend 2592000
