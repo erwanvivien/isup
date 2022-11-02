@@ -73,8 +73,6 @@ type CommandsProps = {
 };
 
 const Commands: React.FC<CommandsProps> = ({ service, statuses }) => {
-  const [open, setOpen] = useState(true);
-
   const commands = Array.from(new Set(statuses.map((s) => s.commandName))).sort(
     (a, b) => a.localeCompare(b)
   );
@@ -105,6 +103,11 @@ const Commands: React.FC<CommandsProps> = ({ service, statuses }) => {
     if (uptime > 70) return { from: "#ffc107", to: "yellow" };
     return { from: "orange", to: "red" };
   };
+
+  const [open, setOpen] = useState(
+    commands.filter((e) => uptimePerCommands[e] === 100).length !==
+      commands.length
+  );
 
   return (
     <>
