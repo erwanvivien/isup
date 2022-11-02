@@ -19,7 +19,7 @@
       },
       {
         "name": "certificates",
-        "command": "./public/certificates.sh 'xiaojiba.dev' '80'",
+        "command": "./public/certificates.sh 'xiaojiba.dev'",
         "retcode": 0
       }
     ]
@@ -44,7 +44,7 @@
       },
       {
         "name": "certificates",
-        "command": "./public/certificates.sh 'fast-qr.com' '80'",
+        "command": "./public/certificates.sh 'fast-qr.com'",
         "retcode": 0
       }
     ]
@@ -69,7 +69,7 @@
       },
       {
         "name": "certificates",
-        "command": "./public/certificates.sh 'ms-settings.net' '80'",
+        "command": "./public/certificates.sh 'ms-settings.net'",
         "retcode": 0
       }
     ]
