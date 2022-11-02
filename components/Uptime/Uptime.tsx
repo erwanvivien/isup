@@ -68,7 +68,7 @@ const Uptime: React.FC = () => {
           setStatsService(serviceStats);
           setStats(stats);
         })
-        .catch((err) => console.error(err));
+        .catch((err) => (!signal.aborted ? console.error(err) : null));
     };
 
     fetchServices();
