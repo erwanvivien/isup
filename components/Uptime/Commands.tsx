@@ -35,15 +35,15 @@ const Command: React.FC<CommandProps> = ({ command, statuses }) => {
   return (
     <div>
       <Title order={3}>{command}</Title>
-      <Group>
+      <Group style={{ display: "flex", flexWrap: "nowrap", gap: 4 }}>
         {sorted.map((status) => (
-          <HoverCard key={status.id} width={280} shadow="md" closeDelay={0}>
+          <HoverCard key={status.id} width={280} shadow="md" closeDelay={50}>
             <HoverCard.Target>
               <Button
-                style={{ flex: 1 }}
+                style={{ flex: 1, height: 24, padding: 0 }}
                 color={status.retcode === 0 ? "green" : "red"}
               >
-                {status.retcode === 0 ? "OK" : "KO"}
+                {status.retcode === 0 ? "✓" : "X"}
               </Button>
             </HoverCard.Target>
             <HoverCard.Dropdown>
@@ -87,7 +87,10 @@ const Commands: React.FC<CommandsProps> = ({ service, statuses }) => {
 
   const uptimePerCommands = Object.fromEntries(
     commands.map((command) => {
-      const status = statusPerCommands[command];
+      const status = statusPerCommands[command]
+        .sort((a, b) => Date.parse(b.timestamp) - Date.parse(a.timestamp))
+        .slice(0, 14)
+        .reverse();
 
       if (status.length === 0) return [command, 0];
       return [
