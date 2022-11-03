@@ -1,10 +1,8 @@
 #!/bin/bash
 
 # Exits 99 if no arguments are given
-# Exits 5 if the certificate are not found
 # Exits 0 if the certificate is valid
-# Exits 1 if the certificate is about to expire
-# Exits 2 if the certificate is expired
+# Exits 1 if the certificate not valid or is going to expire soon
 
 SERV_NAME="${1}"
 SERV_PORT="${2:-443}"
