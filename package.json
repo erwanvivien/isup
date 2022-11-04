@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "verify": "ts-node --compiler-options '{\"module\":\"CommonJS\"}' scripts/verify.ts"
+    "verify": "ts-node --compiler-options '{\"module\":\"CommonJS\", \"resolveJsonModule\": true}' config/verify.ts"
   },
   "dependencies": {
     "@emotion/react": "^11.10.5",
@@ -22,7 +22,8 @@
     "next": "13.0.0",
     "prisma": "^4.5.0",
     "react": "18.2.0",
-    "react-dom": "18.2.0"
+    "react-dom": "18.2.0",
+    "ts-node": "^10.9"
   },
   "devDependencies": {
     "@types/node": "18.11.8",
