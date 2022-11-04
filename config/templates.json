@@ -1,0 +1,16 @@
+{
+  "website": {
+    "variables": {
+      "possible": ["SERV_PORT", "MAX_RESPONSE_TIME"],
+      "mandatory": ["SERV_NAME"],
+      "SERV_PORT": 443,
+      "MAX_RESPONSE_TIME": 1
+    },
+    "commands": {
+      "ping": "./public/ping.sh",
+      "curl": "./public/curl.sh",
+      "certificates": "./public/certificates.sh",
+      "resp_time": "./public/resp_time.sh"
+    }
+  }
+}

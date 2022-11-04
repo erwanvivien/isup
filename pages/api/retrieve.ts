@@ -16,7 +16,7 @@ type RetrieveResponse = ResApi<RetrieveData>;
 
 const getStatuses = (
   serviceName: string,
-  serviceKind: string,
+  serviceTemplate: string,
   commandName?: string,
   lastHours: number = 6
 ) =>
@@ -24,7 +24,7 @@ const getStatuses = (
     where: {
       service: {
         name: serviceName,
-        kind: serviceKind,
+        template: serviceTemplate,
       },
       commandName: commandName,
       timestamp: {
@@ -52,7 +52,7 @@ const handler = async (
   const services = await getServices();
   const promises = services.map(
     async (service) =>
-      await getStatuses(service.name, service.kind, commandName, lastHours)
+      await getStatuses(service.name, service.template, commandName, lastHours)
   );
 
   const exec_statuses = await Promise.all(promises);

@@ -1,21 +1,21 @@
 import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
-import Services from "../public/services.json";
+import Services from "../config/services.json";
 
 export default async function seed() {
   for (const service of Services) {
     const data = {
       name: service.name,
-      kind: service.kind,
+      template: service.template,
       interval: service.interval,
     };
 
     await prisma.service.upsert({
       where: {
-        name_kind: {
+        name_template: {
           name: service.name,
-          kind: service.kind,
+          template: service.template,
         },
       },
       create: data,

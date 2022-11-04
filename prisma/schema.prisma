@@ -11,22 +11,22 @@ datasource db {
 }
 
 model Service {
-  name String @id
-  kind String
+  name     String @id
+  template String
 
   interval Float
 
   ServiceStatus ServiceStatus[]
 
-  @@unique([name, kind])
-  @@index([name, kind])
+  @@unique([name, template])
+  @@index([name, template])
 }
 
 model ServiceStatus {
-  id          String  @id @default(uuid())
-  service     Service @relation(fields: [serviceName, serviceKind], references: [name, kind])
-  serviceName String
-  serviceKind String
+  id              String  @id @default(uuid())
+  service         Service @relation(fields: [serviceName, serviceTemplate], references: [name, template])
+  serviceName     String
+  serviceTemplate String
 
   timestamp DateTime @default(now())
 
@@ -34,7 +34,7 @@ model ServiceStatus {
   stdout      String
   retcode     Int
 
-  @@index([serviceName, serviceKind, timestamp])
+  @@index([serviceName, serviceTemplate, timestamp])
 }
 
 model ExecException {

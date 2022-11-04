@@ -9,6 +9,7 @@ type ExecOutput = {
 
 const execWrapper = (command: string) =>
   new Promise<ExecOutput>((resolve, reject) => {
+    // console.log("command", command);
     exec(command, (error, stdout, stderr) => {
       const output: ExecOutput = {
         stdout,
