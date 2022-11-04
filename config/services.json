@@ -1,29 +1,11 @@
 [
   {
-    "name": "Xiaojiba",
+    "name": "Example",
     "template": "website",
     "interval": 60,
     "commands": ["ping", "certificates", "curl"],
     "variables": {
-      "SERV_NAME": "xiaojiba.dev"
-    }
-  },
-  {
-    "name": "Fast-QR",
-    "template": "website",
-    "interval": 60,
-    "commands": ["ping", "certificates", "curl"],
-    "variables": {
-      "SERV_NAME": "fast-qr.com"
-    }
-  },
-  {
-    "name": "MsSettings",
-    "template": "website",
-    "interval": 60,
-    "commands": ["ping", "certificates", "curl"],
-    "variables": {
-      "SERV_NAME": "ms-settings.net"
+      "SERV_NAME": "example.com"
     }
   }
 ]
