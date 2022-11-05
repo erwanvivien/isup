@@ -1,6 +1,5 @@
-#!/bin/bash
+#!/bin/sh
 
-SERV_NAME="${1}"
 MAX_TIME="${2:-1}"
 
 # Exits 99 if no arguments are given
@@ -8,7 +7,7 @@ MAX_TIME="${2:-1}"
 # Exits 1 if response time is more than MAX_TIME second(s)
 
 if [ -z "${SERV_NAME}" ]; then
-    echo "Usage: ./$0 'server_name' [MAX_TIME]"
+    echo "Usage: SERV_NAME='serv' $0"
     exit 99
 fi
 

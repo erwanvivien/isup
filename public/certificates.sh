@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 # Exits 99 if no arguments are given
 # Exits 0 if the certificate is valid
@@ -7,12 +7,11 @@
 SERV_PORT="${SERV_PORT:-443}"
 
 if [ -z "${SERV_NAME}" ]; then
-    echo "Usage: ./$0 'server_name' 'server_port'"
+    echo "Usage: SERV_NAME='serv' $0"
     exit 99
 fi
 
-# openssl s_client -servername xiaojiba.dev -connect xiaojiba.dev:80 <<< 'Q' 2>/dev/null | openssl x509 -noout -dates
-complete_certificates=$(openssl s_client -servername "${SERV_NAME}" -connect "${SERV_NAME}:${SERV_PORT}" <<< 'Q' 2>/dev/null)
+complete_certificates=$(echo 'Q' | openssl s_client -servername "${SERV_NAME}" -connect "${SERV_NAME}:${SERV_PORT}" 2>/dev/null)
 # echo "$complete_certificates"
 if [ "$?" -ne 0 ]; then
     echo "No certficates were found"
