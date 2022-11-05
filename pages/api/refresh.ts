@@ -59,8 +59,6 @@ const handler = async (
   const Services = (await import("../../config/services.json")).default;
   const Templates = (await import("../../config/templates.json")).default;
 
-  console.log(Services);
-
   if (req.method !== "GET")
     return res
       .status(405)
