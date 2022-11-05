@@ -3,8 +3,9 @@ import styles from "./Uptime.module.css";
 import { Suspense, useEffect, useState } from "react";
 import { RetrieveData, RetrieveResponse } from "../../pages/api/retrieve";
 import Service from "./Service";
-import { Grid, Loader, SimpleGrid, Title } from "@mantine/core";
+import { Grid, Loader, SimpleGrid, Text, Title } from "@mantine/core";
 import Commands from "./Commands";
+import Link from "next/link";
 
 type Stats = Record<
   string,
@@ -50,6 +51,7 @@ const Uptime: React.FC = () => {
   const [statuses, setStatuses] = useState<RetrieveData["statuses"]>({});
   const [serviceStats, setStatsService] = useState<Record<string, Stats>>({});
   const [stats, setStats] = useState<Stats>({});
+  const [fetched, setFetched] = useState(false);
 
   useEffect(() => {
     const controllerAbort = new AbortController();
@@ -68,7 +70,8 @@ const Uptime: React.FC = () => {
           setStatsService(serviceStats);
           setStats(stats);
         })
-        .catch((err) => (!signal.aborted ? console.error(err) : null));
+        .catch((err) => (!signal.aborted ? console.error(err) : null))
+        .then(() => setFetched(true));
     };
 
     fetchServices();
@@ -103,11 +106,23 @@ const Uptime: React.FC = () => {
     </SimpleGrid>
   );
 
-  if (services.length === 0) {
+  if (!fetched) {
     return <Loader />;
   }
 
-  console.log(statuses);
+  if (services.length === 0) {
+    return (
+      <>
+        <Title>No services were fetched</Title>
+        <Text>
+          Please try to{" "}
+          <Link href="/api/refresh" style={{ color: "lightskyblue" }}>
+            refresh
+          </Link>
+        </Text>
+      </>
+    );
+  }
 
   return (
     <>
