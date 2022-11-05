@@ -1,8 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 
 import { ExecOutput, execWrapper } from "./exec";
-import Services from "../../config/services.json";
-import Templates from "../../config/templates.json";
 import prisma from "../../prisma/prisma";
 import { dataWrapper, errorWrapper, ERROR_IDS, ResApi } from "./utils";
 import { clearInterval } from "timers";
@@ -15,8 +13,9 @@ const addStatus = (
   serviceTemplate: string,
   commandName: string,
   output: ExecOutput
-) =>
-  prisma.serviceStatus.create({
+) => {
+  // console.log("Adding status", commandName, "for", serviceName);
+  return prisma.serviceStatus.create({
     data: {
       serviceName,
       serviceTemplate,
@@ -25,17 +24,43 @@ const addStatus = (
       stdout: output.stdout,
     },
   });
+};
+
+const addService = (
+  serviceName: string,
+  serviceTemplate: string,
+  serviceInterval: number
+) => {
+  // console.log("Adding service", serviceName);
+  const data = {
+    name: serviceName,
+    template: serviceTemplate,
+    interval: serviceInterval,
+  };
+
+  return prisma.service.upsert({
+    where: {
+      name_template: {
+        name: serviceName,
+        template: serviceTemplate,
+      },
+    },
+    create: data,
+    update: data,
+  });
+};
 
 let interval: NodeJS.Timeout;
-
-type TemplateType = typeof Templates;
-type TemplateKinds = keyof TemplateType;
-type TemplateCommands = keyof TemplateType[TemplateKinds]["commands"];
 
 const handler = async (
   req: NextApiRequest,
   res: NextApiResponse<RefreshResponse>
 ) => {
+  const Services = (await import("../../config/services.json")).default;
+  const Templates = (await import("../../config/templates.json")).default;
+
+  console.log(Services);
+
   if (req.method !== "GET")
     return res
       .status(405)
@@ -43,31 +68,47 @@ const handler = async (
         errorWrapper(ERROR_IDS.METHOD_NOT_ALLOWED, "Method not allowed", 405)
       );
 
-  clearInterval(interval);
   const refreshData = async () => {
-    const promises = Services.flatMap(
+    for (const service of Services) {
+      await addService(service.name, service.template, service.interval);
+    }
+
+    const statusPromises = Services.flatMap(
       async (service) =>
         await Promise.all(
-          service.commands.map((command) => {
+          service.commands.map(async (command) => {
             const params = Object.entries(service.variables)
               .map((e) => e.join("="))
               .join(" ");
-            const execCommand =
-              Templates[service.template as TemplateKinds].commands[
-                command as TemplateCommands
-              ];
-            return execWrapper(`${params} ${execCommand}`).then((output) =>
-              addStatus(service.name, service.template, command, output)
+            if (!(service.template in Templates))
+              return addStatus(service.name, service.template, command, {
+                stdout: `Template ${service.template} not found`,
+                stderr: "",
+                error: {
+                  code: 1,
+                  name: "TemplateError",
+                  message: `Template ${service.template} not found`,
+                },
+              });
+            const template = (Templates as any)[service.template];
+            const execCommand = template.commands[command];
+            const output = await execWrapper(`${params} ${execCommand}`);
+            return await addStatus(
+              service.name,
+              service.template,
+              command,
+              output
             );
           })
         )
     );
 
-    const _ = await Promise.all(promises);
+    const _statuses = await Promise.allSettled(statusPromises);
     console.log(`[${new Date().toISOString()}]`, "Refreshed");
   };
 
   refreshData();
+  clearInterval(interval);
   interval = setInterval(refreshData, 1000 * 30);
 
   return res.status(200).json(dataWrapper("OK"));
