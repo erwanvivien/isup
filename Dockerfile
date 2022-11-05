@@ -18,6 +18,8 @@ RUN npm run build && npm install --omit=dev --ignore-scripts --prefer-offline
 FROM node:alpine AS runner
 WORKDIR /app
 
+RUN apk add openssl curl iputils
+
 ENV NODE_ENV production
 
 RUN addgroup -g 1001 -S nodejs
@@ -41,8 +43,8 @@ ENV PORT 3000
 # Uncomment the following line in case you want to disable telemetry.
 ENV NEXT_TELEMETRY_DISABLED 1
 
-RUN npm run verify
-USER nextjs
-RUN chown nextjs -R prisma
+RUN echo -e '#!/bin/sh\n npm run verify && \\\n npx prisma migrate deploy && \\\n node_modules/.bin/next start -p 3000' >> start.sh
+RUN chmod +x start.sh
 
-CMD ["node_modules/.bin/next", "start", "-p", "3000"]
+CMD ["./start.sh"]
+
