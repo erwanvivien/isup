@@ -8,6 +8,25 @@ import { clearInterval } from "timers";
 type RefreshData = string;
 type RefreshResponse = ResApi<RefreshData>;
 
+type Service = {
+  name: string;
+  template: string;
+  interval: number;
+  commands: string[];
+  variables: Record<string, any>;
+};
+
+type Template = Record<
+  string,
+  {
+    variables: {
+      possible: string[];
+      mandatory: string[];
+    } & Record<string, any>;
+    commands: Record<string, string>;
+  }
+>;
+
 const addStatus = (
   serviceName: string,
   serviceTemplate: string,
@@ -50,6 +69,30 @@ const addService = (
   });
 };
 
+const retrieveStatus = async (
+  command: string,
+  service: Service,
+  Templates: Template
+) => {
+  const params = Object.entries(service.variables)
+    .map((e) => e.join("="))
+    .join(" ");
+  if (!(service.template in Templates))
+    return addStatus(service.name, service.template, command, {
+      stdout: `Template ${service.template} not found`,
+      stderr: "",
+      error: {
+        code: 1,
+        name: "TemplateError",
+        message: `Template ${service.template} not found`,
+      },
+    });
+  const template = (Templates as any)[service.template];
+  const execCommand = template.commands[command];
+  const output = await execWrapper(`${params} ${execCommand}`);
+  return await addStatus(service.name, service.template, command, output);
+};
+
 let interval: NodeJS.Timeout;
 
 const handler = async (
@@ -74,30 +117,9 @@ const handler = async (
     const statusPromises = Services.flatMap(
       async (service) =>
         await Promise.all(
-          service.commands.map(async (command) => {
-            const params = Object.entries(service.variables)
-              .map((e) => e.join("="))
-              .join(" ");
-            if (!(service.template in Templates))
-              return addStatus(service.name, service.template, command, {
-                stdout: `Template ${service.template} not found`,
-                stderr: "",
-                error: {
-                  code: 1,
-                  name: "TemplateError",
-                  message: `Template ${service.template} not found`,
-                },
-              });
-            const template = (Templates as any)[service.template];
-            const execCommand = template.commands[command];
-            const output = await execWrapper(`${params} ${execCommand}`);
-            return await addStatus(
-              service.name,
-              service.template,
-              command,
-              output
-            );
-          })
+          service.commands.map(async (command) =>
+            retrieveStatus(command, service, Templates)
+          )
         )
     );
 
