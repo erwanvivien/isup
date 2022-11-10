@@ -19,11 +19,11 @@ const formatStats = (
     ([serviceName, commandStatuses]) => [
       serviceName,
       commandStatuses.reduce((acc, curr) => {
-        acc[curr.commandName] ??= { total: 0, failed: 0, succeeded: 0 };
+        acc[curr.command] ??= { total: 0, failed: 0, succeeded: 0 };
 
-        acc[curr.commandName].total++;
-        if (curr.retcode !== 0) acc[curr.commandName].failed++;
-        else acc[curr.commandName].succeeded++;
+        acc[curr.command].total++;
+        if (curr.ok) acc[curr.command].failed++;
+        else acc[curr.command].succeeded++;
 
         return acc;
       }, {} as Stats),

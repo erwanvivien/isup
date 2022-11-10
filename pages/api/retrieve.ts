@@ -10,7 +10,14 @@ type ServiceStatusDate = ServiceStatus & {
 
 type RetrieveData = {
   services: Service[];
-  statuses: Record<string, ServiceStatusDate[]>;
+  statuses: Record<
+    string,
+    {
+      command: string;
+      time: string;
+      ok: boolean;
+    }[]
+  >;
 };
 type RetrieveResponse = ResApi<RetrieveData>;
 
@@ -50,10 +57,20 @@ const handler = async (
   }
 
   const services = await getServices();
-  const promises = services.map(
-    async (service) =>
-      await getStatuses(service.name, service.template, commandName, lastHours)
-  );
+  const promises = services.map(async (service) => {
+    const status = await getStatuses(
+      service.name,
+      service.template,
+      commandName,
+      lastHours
+    );
+
+    return status.map((s) => ({
+      command: s.commandName,
+      time: s.timestamp,
+      ok: s.retcode === 0,
+    }));
+  });
 
   const exec_statuses = await Promise.all(promises);
   const statuses = Object.fromEntries(

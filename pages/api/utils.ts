@@ -23,6 +23,8 @@ let ERROR_IDS = {
   BACKEND_ERROR: 0,
 
   METHOD_NOT_ALLOWED: 100,
+  BAD_REQUEST: 101,
+  NOT_FOUND: 102,
 } as const;
 
 type ErrorKind = keyof typeof ERROR_IDS;
