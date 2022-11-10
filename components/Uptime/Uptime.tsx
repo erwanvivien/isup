@@ -22,8 +22,8 @@ const formatStats = (
         acc[curr.command] ??= { total: 0, failed: 0, succeeded: 0 };
 
         acc[curr.command].total++;
-        if (curr.ok) acc[curr.command].failed++;
-        else acc[curr.command].succeeded++;
+        if (curr.ok) acc[curr.command].succeeded++;
+        else acc[curr.command].failed++;
 
         return acc;
       }, {} as Stats),
