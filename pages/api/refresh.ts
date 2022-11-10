@@ -87,7 +87,7 @@ const retrieveStatus = async (
         message: `Template ${service.template} not found`,
       },
     });
-  const template = (Templates as any)[service.template];
+  const template = Templates[service.template];
   const execCommand = template.commands[command];
   const output = await execWrapper(`${params} ${execCommand}`);
   return await addStatus(service.name, service.template, command, output);
