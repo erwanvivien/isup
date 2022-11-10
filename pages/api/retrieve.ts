@@ -18,6 +18,10 @@ type RetrieveData = {
       ok: boolean;
     }[]
   >;
+  succeeded: Record<
+    string,
+    { total: number; failed: number; succeeded: number }
+  >;
 };
 type RetrieveResponse = ResApi<RetrieveData>;
 
@@ -39,6 +43,18 @@ const getStatuses = (
       },
     },
   }) as any as Promise<ServiceStatusDate[]>;
+
+const getSucceeded = async (serviceName: string) => {
+  const out = await prisma.$queryRaw` 
+SELECT
+  COUNT(*), COUNT(CASE WHEN "retcode" = 0 THEN 1 END)
+FROM
+  ServiceStatus
+WHERE
+  serviceName = ${serviceName};
+`;
+  return out;
+};
 
 const getServices = () => prisma.service.findMany({});
 
@@ -77,7 +93,31 @@ const handler = async (
     services.map((service, i) => [service.name, exec_statuses[i]])
   );
 
-  return res.status(200).json(dataWrapper({ services, statuses: statuses }));
+  const arraySuccess = services.map(async (service) => {
+    const success = (await getSucceeded(service.name)) as any;
+    const total = Number(success[0]["COUNT(*)"]);
+    const succeeded = Number(
+      success[0]['COUNT(CASE WHEN "retcode" = 0 THEN 1 END)']
+    );
+
+    return [
+      service.name,
+      {
+        total,
+        succeeded,
+        failed: total - succeeded,
+      },
+    ] as const;
+  });
+  const succeeded = Object.fromEntries(await Promise.all(arraySuccess));
+
+  return res.status(200).json(
+    dataWrapper({
+      services,
+      statuses,
+      succeeded,
+    })
+  );
 };
 
 export type { RetrieveResponse, RetrieveData };
