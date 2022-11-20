@@ -29,7 +29,7 @@ const getStatuses = (
   serviceName: string,
   serviceTemplate: string,
   commandName?: string,
-  lastHours: number = 6
+  lastHours: number = 0.5
 ) =>
   prisma.serviceStatus.findMany({
     where: {
@@ -62,7 +62,7 @@ const handler = async (
   req: NextApiRequest,
   res: NextApiResponse<RetrieveResponse>
 ) => {
-  let lastHours = 6;
+  let lastHours = 0.5;
   if (req.query.lastHours && Number(req.query.lastHours) > 0) {
     lastHours = Number(req.query.lastHours);
   }
