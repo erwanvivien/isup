@@ -40,7 +40,7 @@ const addStatus = (
       serviceTemplate,
       retcode: output.error?.code || 0,
       commandName,
-      stdout: output.stdout,
+      stdout: output.error && output.error.code !== 0 ? output.stdout : "",
     },
   });
 };
